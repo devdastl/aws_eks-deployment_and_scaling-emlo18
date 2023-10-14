@@ -34,15 +34,36 @@ Below are few required Prerequisite to deploy this project:
 ## Steps to perform deployment
 Lets go through the steps to perform EKS cluster creation and helm deployment
 
-### 1. Building and pushing images
+#### 1. Building and pushing images
+First we have to build and push image to docker registery so that we can pull it in aws cluster.
+1. set proper username and project in makefile.
+2. run `make build-images` to build image.
+3. run `make push-images` to push image to registery.
 
-### 2. Creating Cluster using EKS on AWS
+image src code is in `src/` directory
 
-### 3. Setting up ingress for internet access & setting up Cluster-Autoscaling
+#### 2. Creating Cluster using EKS on AWS
+Now lets create cluster on AWS using EKS. We will use `eks-cluser.yaml` file to create a cluster with spot-instance.
+<br>
+Run command  -> `make create-eks-cluster`  
 
-### 4. Starting service deployment using Helm
+#### 3. Setting up ingress for internet access & setting up Cluster-Autoscaling
+I have created a shell script `irsa.sh` which has command to perform following steps:
+1. Create oidc-provider for the created cluster.
+2. Create custom IAM policy for ALB to use in ingress and for Cluster-Autoscaler.
+3. Create iamserviceaccount for ALB and for Cluster-Autoscaler.
+4. Install ALB via Helm.
+
+To do all the above just run `make set-hpa-ca` it will run the script and will setup everyting.
+
+#### 4. Starting service deployment using Helm
+Now to deploy the services via Helm run `make helm-deployment`.
+This will deploy all the services.
+<br>
+To get internet facing ingress hostname you can look into ingress pod.
 
 ## Stress testing deployment
+install python requests and set url to perform stress testing by running `python stress-testing.py`
 
 ## Inference output
 Lest see how to use `mykube-app.com/docs` api page to perform inference.
